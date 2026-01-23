@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# venv
+venv/
+.venv/
+
+# env files
+.env
+.env.*
+
+# IDE
+.idea/
+*.iml
+
+# Alembic caches
+alembic/versions/__pycache__/
+
+# OS
+.DS_Store
