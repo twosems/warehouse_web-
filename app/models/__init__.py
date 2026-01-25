@@ -6,3 +6,9 @@ from .supply import Supply  # noqa
 from .supply_item import SupplyItem  # noqa
 from .supply_event import SupplyEvent  # noqa
 from .batch import Batch  # noqa
+
+# listeners MUST be imported to register SQLAlchemy events
+from . import supply_item_listeners  # noqa: F401
+from . import supply_event_listeners  # noqa: F401
+from .stock import Stock  # noqa
+from . import stock_listeners  # noqa: F401

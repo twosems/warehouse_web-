@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, delete, update
 
@@ -10,7 +10,13 @@ from app.schemas.product import (
     ProductUpdate,
 )
 from app.admin import setup_admin
+from app.schemas.supply import SupplyCreate
+from app.services.supply_service import create_supply
+from fastapi import HTTPException
 
+from app.schemas.supply_event import SupplyEventCreate
+from app.services.supply_service import add_supply_event
+from app.models import Supply
 
 # --------------------
 # FastAPI app
@@ -99,3 +105,43 @@ async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Product not found")
 
     await db.commit()
+@app.post("/supplies", response_model=dict)
+async def create_supply_api(
+        data: SupplyCreate,
+        db: AsyncSession = Depends(get_db),
+):
+    supply = await create_supply(db, data)
+    await db.commit()
+    await db.refresh(supply)
+
+    return {
+        "id": supply.id,
+        "status": supply.status,
+    }
+
+@app.post("/supplies/{supply_id}/events", response_model=dict)
+async def create_supply_event_api(
+        supply_id: int,
+        data: SupplyEventCreate,
+        db: AsyncSession = Depends(get_db),
+):
+    supply = await db.get(Supply, supply_id)
+    if not supply:
+        raise HTTPException(status_code=404, detail="Supply not found")
+
+    try:
+        supply = await add_supply_event(
+            db=db,
+            supply=supply,
+            data=data,
+        )
+        await db.commit()
+        await db.refresh(supply)
+    except ValueError as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {
+        "id": supply.id,
+        "status": supply.status,
+    }

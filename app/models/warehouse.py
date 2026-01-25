@@ -11,3 +11,6 @@ class Warehouse(Base):
     name: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
     address: Mapped[str | None] = mapped_column(Text, nullable=True)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    def __str__(self) -> str:
+        return f"[{self.id}] {self.name}"

@@ -9,6 +9,7 @@ from app.admin_views import (
     SupplyItemAdmin,
     SupplyEventAdmin,
     BatchAdmin,
+    StockAdmin,
 )
 
 
@@ -23,5 +24,5 @@ def setup_admin(app):
     admin.add_view(SupplyItemAdmin)
     admin.add_view(SupplyEventAdmin)
     admin.add_view(BatchAdmin)
-
+    admin.add_view(StockAdmin)
     return admin
