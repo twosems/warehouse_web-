@@ -17,6 +17,10 @@ from fastapi import HTTPException
 from app.schemas.supply_event import SupplyEventCreate
 from app.services.supply_service import add_supply_event
 from app.models import Supply
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi import HTTPException
+from app.services.supply_events_map import allowed_events_for_supply
 
 # --------------------
 # FastAPI app
@@ -26,6 +30,8 @@ app = FastAPI(title="Warehouse System", debug=True)
 # Подключаем SQLAdmin
 setup_admin(app)
 
+BASE_DIR = Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 # --------------------
 # DB dependency
@@ -145,3 +151,12 @@ async def create_supply_event_api(
         "id": supply.id,
         "status": supply.status,
     }
+@app.get("/admin/api/supply/{supply_id}/allowed-events")
+async def admin_allowed_events(supply_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Supply).where(Supply.id == supply_id))
+    supply = result.scalar_one_or_none()
+    if not supply:
+        raise HTTPException(status_code=404, detail="Supply not found")
+
+    allowed = allowed_events_for_supply(supply.source, supply.status)
+    return [e.value for e in allowed]
