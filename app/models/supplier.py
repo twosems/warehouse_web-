@@ -12,3 +12,6 @@ class Supplier(Base):
 
     contact: Mapped[str | None] = mapped_column(String(200), nullable=True)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    def __str__(self) -> str:
+        return f"[{self.id}] {self.name}"

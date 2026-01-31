@@ -36,3 +36,6 @@ class SupplyItem(Base):
 
     supply = relationship("Supply")
     product = relationship("Product")
+
+    def __str__(self) -> str:
+        return f"Supply #{self.supply_id} → Product #{self.product_id} x {self.quantity}"

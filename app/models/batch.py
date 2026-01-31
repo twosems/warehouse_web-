@@ -45,3 +45,6 @@ class Batch(Base):
     supply = relationship("Supply")
     product = relationship("Product")
     warehouse = relationship("Warehouse")
+
+    def __str__(self) -> str:
+        return f"Batch #{self.id} | Supply #{self.supply_id} | Product #{self.product_id} | Qty {self.quantity}"
